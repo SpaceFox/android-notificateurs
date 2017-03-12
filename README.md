@@ -3,6 +3,8 @@ ZdS Notificateur
 
 ![](app/src/main/web_hi_res_512.png)
 
+[![](https://play.google.com/intl/en_us/badges/images/badge_new.png)](https://play.google.com/store/apps/details?id=com.zestedesavoir.android)
+
 Projet Android destiné à notifier les utilisateurs Zeste de Savoir de toutes leurs nouvelles
 notifications et de les consulter en ouvrant le navigateur web sur leurs téléphones.
 
@@ -24,7 +26,7 @@ Captures
 
 ![](captures/list.png) ![](captures/notification.png)
 
-License
+Licence
 -------
 
     Copyright 2017 Gérard Paligot

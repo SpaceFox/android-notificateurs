@@ -8,7 +8,7 @@ import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 
-import com.zestedesavoir.android.MainActivity;
+import com.zestedesavoir.android.main.MainActivity;
 import com.zestedesavoir.android.R;
 import com.zestedesavoir.android.ZdSApplication;
 import com.zestedesavoir.android.internal.exceptions.RetrofitException;

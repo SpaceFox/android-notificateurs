@@ -10,8 +10,8 @@ import android.widget.Button;
 
 import com.zestedesavoir.android.R;
 import com.zestedesavoir.android.internal.exceptions.RetrofitException;
+import com.zestedesavoir.android.internal.ioc.AppComponent;
 import com.zestedesavoir.android.internal.ui.AbsFragment;
-import com.zestedesavoir.android.login.managers.Session;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -20,10 +20,8 @@ import timber.log.Timber;
 public class LoginFragment extends AbsFragment<LoginContracts.Presenter> implements LoginContracts.View {
     public static final String TAG = "LoginFragment";
 
-    public static Fragment newInstance(Session session) {
-        final LoginFragment fragment = new LoginFragment();
-        fragment.setPresenter(new LoginPresenter(fragment, session));
-        return fragment;
+    public static Fragment newInstance() {
+        return new LoginFragment();
     }
 
     @BindView(R.id.et_login)
@@ -36,6 +34,11 @@ public class LoginFragment extends AbsFragment<LoginContracts.Presenter> impleme
     @Override
     protected int getResLayout() {
         return R.layout.fragment_login;
+    }
+
+    @Override
+    protected void inject(AppComponent component) {
+        component.plus(new LoginPresenterModule(this)).inject(this);
     }
 
     @Override

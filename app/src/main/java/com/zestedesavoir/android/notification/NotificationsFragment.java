@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 
 import com.zestedesavoir.android.R;
 import com.zestedesavoir.android.internal.exceptions.RetrofitException;
+import com.zestedesavoir.android.internal.ioc.AppComponent;
 import com.zestedesavoir.android.internal.ui.AbsFragment;
 import com.zestedesavoir.android.internal.ui.EndlessRecyclerViewScrollListener;
 import com.zestedesavoir.android.notification.managers.NotificationsManager;
@@ -34,10 +35,8 @@ import timber.log.Timber;
 public class NotificationsFragment extends AbsFragment<NotificationsContracts.Presenter> implements NotificationsContracts.View {
     public static final String TAG = "NotificationsFragment";
 
-    public static Fragment newInstance(NotificationsManager manager) {
-        final NotificationsFragment fragment = new NotificationsFragment();
-        fragment.setPresenter(new NotificationsPresenter(fragment, manager));
-        return fragment;
+    public static Fragment newInstance() {
+        return new NotificationsFragment();
     }
 
     @BindView(R.id.progress)
@@ -52,6 +51,11 @@ public class NotificationsFragment extends AbsFragment<NotificationsContracts.Pr
     @Override
     protected int getResLayout() {
         return R.layout.fragment_notifications;
+    }
+
+    @Override
+    protected void inject(AppComponent component) {
+        component.plus(new NotificationsPresenterModule(this)).inject(this);
     }
 
     @Override

@@ -11,20 +11,21 @@ import android.view.MenuItem;
 import com.zestedesavoir.android.BuildConfig;
 import com.zestedesavoir.android.OnNavigationListener;
 import com.zestedesavoir.android.R;
-import com.zestedesavoir.android.login.managers.Session;
+import com.zestedesavoir.android.ZdSApplication;
+
+import javax.inject.Inject;
 
 import de.psdev.licensesdialog.LicensesDialog;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SettingsContracts.View {
     public static final String TAG = "SettingsFragment";
 
-    public static Fragment newInstance(Session session) {
-        final SettingsFragment fragment = new SettingsFragment();
-        fragment.setPresenter(new SettingsPresenter(fragment, session));
-        return fragment;
+    public static Fragment newInstance() {
+        return new SettingsFragment();
     }
 
-    private SettingsContracts.Presenter presenter;
+    @Inject
+    SettingsContracts.Presenter presenter;
 
     protected OnNavigationListener listener;
 
@@ -66,6 +67,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle(getString(R.string.menu_settings));
         }
+        ((ZdSApplication) getContext().getApplicationContext()).getAppComponent().plus(new SettingsPresenterModule(this)).inject(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.subscribe();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.unsubscribe();
     }
 
     @Override
@@ -76,11 +90,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void setPresenter(SettingsContracts.Presenter presenter) {
-        this.presenter = presenter;
     }
 
     @Override

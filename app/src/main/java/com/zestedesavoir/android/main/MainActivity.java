@@ -1,9 +1,8 @@
-package com.zestedesavoir.android;
+package com.zestedesavoir.android.main;
 
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -11,10 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.zestedesavoir.android.OnNavigationListener;
+import com.zestedesavoir.android.R;
+import com.zestedesavoir.android.ZdSApplication;
 import com.zestedesavoir.android.login.LoginFragment;
-import com.zestedesavoir.android.login.managers.Session;
 import com.zestedesavoir.android.notification.NotificationsFragment;
-import com.zestedesavoir.android.notification.managers.NotificationsManager;
 import com.zestedesavoir.android.notification.services.NotificationService;
 import com.zestedesavoir.android.notification.services.StarterReceiver;
 import com.zestedesavoir.android.settings.SettingsFragment;
@@ -23,52 +23,29 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-public class MainActivity extends AppCompatActivity implements OnNavigationListener {
-    private static final String STACK_MAIN = "Main";
+public class MainActivity extends AppCompatActivity implements OnNavigationListener, MainContracts.View {
 
     @Inject
-    Session session;
-
-    @Inject
-    NotificationsManager manager;
+    MainContracts.Presenter presenter;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    @NonNull
-    private CompositeSubscription subscription = new CompositeSubscription();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ButterKnife.bind(this);
-        ((ZdSApplication) getApplicationContext()).getAppComponent().inject(this);
+        ((ZdSApplication) getApplicationContext()).getAppComponent().plus(new MainPresenterModule(this)).inject(this);
         setSupportActionBar(toolbar);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (subscription.isUnsubscribed()) {
-            subscription = new CompositeSubscription();
-        }
-        subscription.add(session.isAuthenticated()
-                .flatMap(aBoolean -> manager.clear().map(aVoid -> aBoolean))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aBoolean -> {
-                    if (!aBoolean) {
-                        goToLoginScreen();
-                    } else {
-                        goToNotificationScreen();
-                    }
-                })
-        );
+        presenter.subscribe();
+        presenter.isAuthenticated();
         final NotificationManager manager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(NotificationService.NOTIFICATION_ID);
     }
@@ -76,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationListe
     @Override
     protected void onPause() {
         super.onPause();
-        subscription.clear();
+        presenter.unsubscribe();
     }
 
     @Override
@@ -86,27 +63,26 @@ public class MainActivity extends AppCompatActivity implements OnNavigationListe
     }
 
     @Override
+    public void isDisconnected() {
+        toolbar.setVisibility(View.GONE);
+        goTo(LoginFragment.newInstance(), LoginFragment.TAG, null);
+    }
+
+    @Override
     public void goToLoginScreen() {
-        subscription.add(session.disconnect()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aVoid -> {
-                    toolbar.setVisibility(View.GONE);
-                    goTo(LoginFragment.newInstance(session), LoginFragment.TAG, null);
-                })
-        );
+        presenter.disconnect();
     }
 
     @Override
     public void goToNotificationScreen() {
         toolbar.setVisibility(View.VISIBLE);
-        goTo(NotificationsFragment.newInstance(manager), NotificationsFragment.TAG, null);
+        goTo(NotificationsFragment.newInstance(), NotificationsFragment.TAG, null);
     }
 
     @Override
     public void goToSettingsScreen() {
         toolbar.setVisibility(View.VISIBLE);
-        goTo(SettingsFragment.newInstance(session), SettingsFragment.TAG);
+        goTo(SettingsFragment.newInstance(), SettingsFragment.TAG);
     }
 
     @Override

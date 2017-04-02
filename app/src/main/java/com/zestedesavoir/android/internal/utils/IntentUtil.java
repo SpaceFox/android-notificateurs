@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.support.v4.app.TaskStackBuilder;
 
 import com.zestedesavoir.android.BuildConfig;
-import com.zestedesavoir.android.MainActivity;
+import com.zestedesavoir.android.main.MainActivity;
 
 public final class IntentUtil {
     public static Intent createBrowserIntent(String url) {

@@ -9,11 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.zestedesavoir.android.OnNavigationListener;
+import com.zestedesavoir.android.ZdSApplication;
+import com.zestedesavoir.android.internal.ioc.AppComponent;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 
 public abstract class AbsFragment<T extends BasePresenter> extends Fragment implements BaseView<T> {
+    @Inject
     protected T presenter;
+
     protected OnNavigationListener listener;
 
     @Override
@@ -30,11 +36,14 @@ public abstract class AbsFragment<T extends BasePresenter> extends Fragment impl
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View inflate = inflater.inflate(getResLayout(), container, false);
         ButterKnife.bind(this, inflate);
+        inject(((ZdSApplication) getContext().getApplicationContext()).getAppComponent());
         return inflate;
     }
 
     @LayoutRes
     protected abstract int getResLayout();
+
+    protected abstract void inject(AppComponent component);
 
     @Override
     public void onResume() {
@@ -52,8 +61,4 @@ public abstract class AbsFragment<T extends BasePresenter> extends Fragment impl
         }
     }
 
-    @Override
-    public void setPresenter(T presenter) {
-        this.presenter = presenter;
-    }
 }

@@ -18,6 +18,7 @@ class NotificationsPresenter extends AbsPresenter implements NotificationsContra
     private final NotificationsManager manager;
 
     NotificationsPresenter(@NonNull NotificationsContracts.View view, @NonNull NotificationsManager manager) {
+        super();
         this.view = view;
         this.manager = manager;
     }

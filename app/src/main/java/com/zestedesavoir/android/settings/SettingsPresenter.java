@@ -16,6 +16,7 @@ class SettingsPresenter extends AbsPresenter implements SettingsContracts.Presen
     private final Session session;
 
     SettingsPresenter(@NonNull SettingsContracts.View view, @NonNull Session session) {
+        super();
         this.view = view;
         this.session = session;
     }

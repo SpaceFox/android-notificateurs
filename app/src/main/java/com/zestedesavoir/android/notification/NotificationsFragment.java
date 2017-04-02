@@ -1,9 +1,6 @@
 package com.zestedesavoir.android.notification;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -17,14 +14,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import com.zestedesavoir.android.R;
 import com.zestedesavoir.android.internal.exceptions.RetrofitException;
 import com.zestedesavoir.android.internal.ioc.AppComponent;
 import com.zestedesavoir.android.internal.ui.AbsFragment;
 import com.zestedesavoir.android.internal.ui.EndlessRecyclerViewScrollListener;
-import com.zestedesavoir.android.notification.managers.NotificationsManager;
 import com.zestedesavoir.android.notification.models.Notification;
 
 import java.util.List;
@@ -39,8 +34,6 @@ public class NotificationsFragment extends AbsFragment<NotificationsContracts.Pr
         return new NotificationsFragment();
     }
 
-    @BindView(R.id.progress)
-    ProgressBar pbLoading;
     @BindView(R.id.rv_notifications)
     RecyclerView rvNotifications;
     @BindView(R.id.srl_notifications)
@@ -142,32 +135,5 @@ public class NotificationsFragment extends AbsFragment<NotificationsContracts.Pr
     @Override
     public void showProgress(final boolean show) {
         srlNotifications.setRefreshing(show);
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            rvNotifications.setVisibility(show ? View.GONE : View.VISIBLE);
-            rvNotifications.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    rvNotifications.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            pbLoading.setVisibility(show ? View.VISIBLE : View.GONE);
-            pbLoading.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    pbLoading.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            pbLoading.setVisibility(show ? View.VISIBLE : View.GONE);
-            rvNotifications.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
     }
 }

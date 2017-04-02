@@ -10,6 +10,3 @@ gradle.properties
 
 # Mac OS
 .DS_Store
-
-# Firebase
-app/google-services.json
